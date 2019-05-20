@@ -1,7 +1,6 @@
 <template>
     <div class="pokemon-finder">
-        <input type="text" v-model="searchTerm" placeholder="Type a Pokémon name here...">
-        <button @click="searchPokemon">Search</button>
+        <input type="text" v-model="searchTerm" @keypress="searchPokemon" placeholder="Type a Pokémon name here...">
 
         <div class="pokemon-info" v-if="pokemon.wasFound">
             <ul>
@@ -30,12 +29,16 @@ export default {
             this.pokemon = {}
             this.pokemon.wasFound = false
 
-            axios.get(`https://pokeapi.co/api/v2/pokemon/${this.searchTerm}/`)
-                .then((pokemonReturned => {
-                    this.pokemon = pokemonReturned.data
-                    this.pokemon.wasFound = true;
-                }))
-                .catch(() => console.log('Error on getting pokemon data.'))
+            let fnExec = setTimeout(() => {
+                clearTimeout(fnExec)
+
+                axios.get(`https://pokeapi.co/api/v2/pokemon/${this.searchTerm}/`)
+                    .then((pokemonReturned => {
+                        this.pokemon = pokemonReturned.data
+                        this.pokemon.wasFound = true;
+                    }))
+                    .catch(() => console.log('Error on getting pokemon data.'))
+            }, 1000)
         }
     }
 }
