@@ -1,11 +1,15 @@
 <template>
-    <div>
-        <input type="text" placeholder="Type a Pokémon name here...">
+    <div class="pokemon-finder">
+        <input type="text" v-model="searchTerm" placeholder="Type a Pokémon name here...">
         <button @click="searchPokemon">Search</button>
-        <div v-if="pokemon.wasFound">
+
+        <div class="pokemon-info" v-if="pokemon.wasFound">
             <ul>
-                <span>Name: {{ pokemon.name }}</span>
-                <span>Weight: {{ pokemon.weight }}</span>
+                <li>Name: {{ pokemon.name }}</li>
+                <li>Weight: {{ pokemon.weight }}</li>
+                <li>Type:
+                    <span v-for="type of pokemon.types" :key="type.id">{{type.type.name}} </span>
+                </li>
             </ul>
         </div>
     </div>
@@ -17,20 +21,28 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            pokemon: { wasFound: false }
+            pokemon: { wasFound: false },
+            searchTerm: ''
         }
     },
     methods: {
         searchPokemon() {
+            this.pokemon = {}
             this.pokemon.wasFound = false
 
-            axios.get('https://pokeapi.co/api/v2/pokemon/pikachu/')
+            axios.get(`https://pokeapi.co/api/v2/pokemon/${this.searchTerm}/`)
                 .then((pokemonReturned => {
                     this.pokemon = pokemonReturned.data
-                    this.pokemon.wasFound = true
+                    this.pokemon.wasFound = true;
                 }))
                 .catch(() => console.log('Error on getting pokemon data.'))
         }
     }
 }
 </script>
+
+<style>
+.pokemon-finder .pokemon-info ul {
+    list-style: none;
+}
+</style>
