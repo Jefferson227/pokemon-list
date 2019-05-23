@@ -2,7 +2,7 @@
     <div class="pokemon-finder">
         <input type="text" v-model="searchTerm" @keypress="searchPokemon" placeholder="Type a Pokémon name here...">
 
-        <div class="pokemon-info" v-if="pokemon.wasFound">
+        <div class="pokemon-info" v-show="pokemon.wasFound">
             <ul>
                 <li>Name: {{ pokemon.name }}</li>
                 <li>Weight: {{ pokemon.weight }}</li>
@@ -10,6 +10,9 @@
                     <span v-for="type of pokemon.types" :key="type.id">{{type.type.name}} </span>
                 </li>
             </ul>
+        </div>
+        <div v-show="!pokemon.wasFound">
+            <p>{{ message }}</p>
         </div>
     </div>
 </template>
@@ -21,13 +24,17 @@ export default {
     data() {
         return {
             pokemon: { wasFound: false },
-            searchTerm: ''
+            searchTerm: '',
+            message: 'The Pokémon\'s info should appear here.'
         }
     },
     methods: {
         searchPokemon() {
             this.pokemon = {}
             this.pokemon.wasFound = false
+            this.message = "Searching..."
+
+            if (!this.searchTerm.length) return;
 
             let fnExec = setTimeout(() => {
                 clearTimeout(fnExec)
@@ -37,8 +44,8 @@ export default {
                         this.pokemon = pokemonReturned.data
                         this.pokemon.wasFound = true;
                     }))
-                    .catch(() => console.log('Error on getting pokemon data.'))
-            }, 1000)
+                    .catch(() => this.message = "Pokémon not found.")
+            }, 2000)
         }
     }
 }
